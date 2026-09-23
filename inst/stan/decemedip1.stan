@@ -1,6 +1,6 @@
 functions {
-  vector build_b_spline(real[] t, real[] ext_knots, int ind, int order);
-  vector build_b_spline(real[] t, real[] ext_knots, int ind, int order) {
+  vector build_b_spline(array[] real t, array[] real ext_knots, int ind, int order);
+  vector build_b_spline(array[] real t, array[] real ext_knots, int ind, int order) {
     // INPUTS:
     //    t:          the points at which the b_spline is calculated
     //    ext_knots:  the set of extended knots
@@ -27,8 +27,8 @@ functions {
     return b_spline;
   }
 
-  matrix construct_spline_bases(int N, real[] X, int n_knot, vector knots, int degree);
-  matrix construct_spline_bases(int N, real[] X, int n_knot, vector knots, int degree) {
+  matrix construct_spline_bases(int N, array[] real X, int n_knot, vector knots, int degree);
+  matrix construct_spline_bases(int N, array[] real X, int n_knot, vector knots, int degree) {
 
     int n_basis = n_knot + degree - 1; // total number of B-splines
 
@@ -50,9 +50,9 @@ data {
   // input data
   int<lower=0> N;                 // number of observations
   int<lower=0> K;                 // number of cell types
-  int<lower=0> y[N];              // outcome variable
+  array[N] int<lower=0> y;              // outcome variable
   matrix<lower=0, upper=1>[N, K] X;           // reference panel
-  real<lower=0> z[N];              // CpG density of reference sites
+  array[N] real<lower=0> z;              // CpG density of reference sites
 
   // prior parameter for proportions
   corr_matrix[K] Xi; // Correlation matrix for logit-normal prior
@@ -172,7 +172,7 @@ generated quantities {
   // GLM Likelihood
   vector[N] mu = exp(D_mu * w_mu);
   vector[N] sigma = exp(D_sigma * w_sigma);
-  int y_sim[N];
+  array[N] int y_sim;
 
   for (n in 1:N) {
     y_sim[n] = neg_binomial_2_rng(mu[n], sigma[n]);
